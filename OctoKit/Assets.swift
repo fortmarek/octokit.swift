@@ -42,6 +42,7 @@ public extension Octokit {
     ///   - owner: The user or organization that owns the repositories.
     ///   - repo: The repository on which the release needs to be created.
     ///   - releaseId: Id of a release you want to upload the asset for
+    ///   - binaryData: Data of file in binary format
     ///   - name: Name of the asset
     ///   - label: Alternate short description of the asset
     ///   - completion: Callback for the outcome of the uploaded asset
@@ -51,11 +52,20 @@ public extension Octokit {
         owner: String,
         repository: String,
         releaseId: Int,
+        binaryData: Data,
         name: String,
         label: String? = nil,
         completion: @escaping (_ response: Response<Asset>) -> Void
     ) -> URLSessionDataTaskProtocol? {
-        let router = UploadAssetRouter.uploadAsset(configuration, owner, repository, releaseId, name, label)
+        let router = UploadAssetRouter.uploadAsset(
+            configuration,
+            owner,
+            repository,
+            releaseId,
+            binaryData,
+            name,
+            label
+        )
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(Time.rfc3339DateFormatter)
 
@@ -75,11 +85,11 @@ public extension Octokit {
 // MARK: Router
 
 enum UploadAssetRouter: JSONPostRouter {
-    case uploadAsset(Configuration, String, String, Int, String, String?)
+    case uploadAsset(Configuration, String, String, Int, Data, String, String?)
 
     var configuration: Configuration {
         switch self {
-        case let .uploadAsset(config, _, _, _, _, _):
+        case let .uploadAsset(config, _, _, _, _, _, _):
             return config
         }
     }
@@ -89,12 +99,12 @@ enum UploadAssetRouter: JSONPostRouter {
     }
 
     var encoding: HTTPEncoding {
-        return .json
+        return .url
     }
 
     var params: [String: Any] {
         switch self {
-        case let .uploadAsset(_, _, _, _, name, label):
+        case let .uploadAsset(_, _, _, _, _, name, label):
             var params: [String: Any] = [
                 "name": name,
             ]
@@ -107,7 +117,7 @@ enum UploadAssetRouter: JSONPostRouter {
 
     var path: String {
         switch self {
-        case let .uploadAsset(_, owner, repo, releaseId, _, _):
+        case let .uploadAsset(_, owner, repo, releaseId, _, _, _):
             return "repos/\(owner)/\(repo)/releases/\(releaseId)/assets"
         }
     }

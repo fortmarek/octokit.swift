@@ -11,7 +11,7 @@ final class AssetsTests: XCTestCase {
 
     func testUploadAssets() {
         let session = OctoKitURLTestSession(
-            expectedURL: "https://api.github.com/repos/octocat/Hello-world/releases/1/assets",
+            expectedURL: "https://api.github.com/repos/octocat/Hello-world/releases/1/assets?name=foo.zip",
             expectedHTTPMethod: "POST",
             jsonFile: "upload_asset",
             statusCode: 201
@@ -21,6 +21,7 @@ final class AssetsTests: XCTestCase {
             owner: "octocat",
             repository: "Hello-world",
             releaseId: 1,
+            binaryData: Data(),
             name: "foo.zip"
         ) { response in
                 switch response {
