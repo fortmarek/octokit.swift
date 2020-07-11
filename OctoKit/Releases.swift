@@ -20,6 +20,7 @@ public struct Release: Codable {
     public let assetsURL: URL
     public let tarballURL: URL
     public let zipballURL: URL
+    public let uploadURL: URL
     public let nodeId: String
     public let tagName: String
     public let commitish: String
@@ -43,6 +44,7 @@ public struct Release: Codable {
         case commitish = "target_commitish"
         case createdAt = "created_at"
         case publishedAt = "published_at"
+        case uploadURL = "upload_url"
     }
 }
 
